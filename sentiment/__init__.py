@@ -10,5 +10,3 @@ def get(text: str) -> str:
         else:
             return 'negative'
 
-if __name__ == "__main__":
-    print(get("good"))

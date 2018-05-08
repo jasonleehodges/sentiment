@@ -9,4 +9,3 @@ def get(text: str) -> str:
             return 'neutral'
         else:
             return 'negative'
-

@@ -2,6 +2,7 @@ import re
 import tweepy  # pylint: disable=E0401
 from tweepy import OAuthHandler  # pylint: disable=E0401
 from textblob import TextBlob  # pylint: disable=E0401
+import configparser
 
 class TwitterClient(object):
     '''
@@ -11,11 +12,12 @@ class TwitterClient(object):
         '''
         Class constructor or initialization method.
         '''
+        CONFIG = self.get_config("creds.cfg")
         # keys and tokens from the Twitter Dev Console
-        consumer_key = 'XXXXXXXXXXXXXXXXXXXXXXXX'
-        consumer_secret = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-        access_token = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-        access_token_secret = 'XXXXXXXXXXXXXXXXXXXXXXXXX'
+        consumer_key = CONFIG.get('CREDS', 'consumer_key')
+        consumer_secret = CONFIG.get('CREDS', 'consumer_secret')
+        access_token = CONFIG.get('CREDS', 'access_token')
+        access_token_secret = CONFIG.get('CREDS', 'access_token_secret')
 
         # attempt authentication
         try:
@@ -86,11 +88,30 @@ class TwitterClient(object):
             # print error (if any)
             print("Error : " + str(e))
 
+    def get_config(self, config_filename):
+        """parse config file
+        Args:
+            config_filename (str): path to config file
+        Returns:
+            (:obj:`configparser.ConfigParser`)
+        """
+        config = configparser.ConfigParser(
+            interpolation=configparser.ExtendedInterpolation(),
+            allow_no_value=True,
+            delimiters=('='),
+            inline_comment_prefixes=('#')
+        )
+
+        with open(config_filename, 'r') as file:
+            config.read_file(file)
+
+        return config
+
 def main():
     # creating object of TwitterClient Class
     api = TwitterClient()
     # calling function to get tweets
-    tweets = api.get_tweets(query='Donald Trump', count=200)
+    tweets = api.get_tweets(query='#UofU', count=200)
 
     # picking positive tweets from tweets
     ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
@@ -101,8 +122,7 @@ def main():
     # percentage of negative tweets
     print("Negative tweets percentage: {} %".format(100 * len(ntweets) / len(tweets)))
     # percentage of neutral tweets
-    print("Neutral tweets percentage: {} % \
-        ".format(100 * len(tweets - ntweets - ptweets) / len(tweets)))
+    print("Neutral tweets percentage: {} % ".format(100 * (len(tweets) - len(ntweets) - len(ptweets)) / len(tweets)))
 
     # printing first 5 positive tweets
     print("\n\nPositive tweets:")

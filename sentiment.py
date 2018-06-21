@@ -13,7 +13,7 @@ class TwitterClient(object):
         Class constructor or initialization method.
         '''
         CONFIG = self.get_config("creds.cfg")
-        # keys and tokens from the Twitter Dev Console
+        # keys and tokens from the Twitter Dev Console 123
         consumer_key = CONFIG.get('CREDS', 'consumer_key')
         consumer_secret = CONFIG.get('CREDS', 'consumer_secret')
         access_token = CONFIG.get('CREDS', 'access_token')
